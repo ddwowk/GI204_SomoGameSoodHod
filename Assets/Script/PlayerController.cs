@@ -11,10 +11,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI textMesh;
     [SerializeField] private Canvas canvas;
     [SerializeField] LayerMask checkRayPlayer;
+    private Animator animator;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
         move = InputSystem.actions.FindAction("Jump");
+        animator = gameObject.transform.GetChild(0).gameObject.GetComponent<Animator>();
+        checkRayPlayer = LayerMask.GetMask("Player");
     }
     private void Start()
     {
@@ -30,7 +33,7 @@ public class PlayerController : MonoBehaviour
         {
             gameObject.transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime);
         }
-
+        animator.SetBool("onPressWalk", move.IsInProgress());
     }
     private void LateUpdate()
     {
@@ -41,9 +44,9 @@ public class PlayerController : MonoBehaviour
     {
         if (move.IsInProgress())
         {
-            if (collision.gameObject.CompareTag("Player") && Physics.Raycast(transform.position, transform.forward, 10, checkRayPlayer))
+            if (collision.gameObject.CompareTag("Player") && Physics.Raycast(transform.position, transform.forward, 500, checkRayPlayer))
             {
-                GameMeager.Instance.playroomKit.RpcCall("PlayerHit",collision.gameObject.name);
+                GameMeager.Instance.playroomKit.RpcCall("PlayerHit", collision.gameObject.name);
             }
         }
     }
