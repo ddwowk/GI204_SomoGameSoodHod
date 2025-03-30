@@ -138,9 +138,9 @@ public class GameMeager : MonoBehaviour
         StartCoroutine(WaitFor(1, () => { RemovePlayer(tagetID); }));
         StartCoroutine(WaitFor(3, () => { Destroy(deadEffectObj); }));
         SoundManeger.Instance.PlaySound(deadAudio[UnityEngine.Random.Range(0, deadAudio.Length)], false, tagetObj.GetComponent<AudioSource>());
-        if (PlayerDick.Count <= 1)
+        if (playerGameObjects.Count <= 1)
         {
-            if (PlayerDick.Count > 0)
+            if (PlayerDick.Keys.Count > 0)
             {
                 playroomKit.SetState("Winner", playroomKit.GetPlayer(PlayerDick.Keys.ToArray()[0]).GetProfile().name);
             }

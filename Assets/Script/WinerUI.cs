@@ -15,11 +15,13 @@ public class WinerUI : MonoBehaviour
 
     public void updateData(List<string> otherPlayerID)
     {
-        for(int i = 0; i < otherName.Length; i++)
+        List<string> sortName = otherPlayerID.Distinct().ToList();
+        
+        for (int i = 0; i < otherName.Length; i++)
         {
-            if (i < otherPlayerID.Count && otherPlayerID.Count != 0)
+            if (i < sortName.Count && otherPlayerID.Count != 0 && GameMeager.Instance.playroomKit.GetPlayer(sortName[i]).GetProfile().name != GameMeager.Instance.playroomKit.GetState<string>("Winner"))
             {
-                otherName[i].text = GameMeager.Instance.playroomKit.GetPlayer(otherPlayerID[i]).GetProfile().name;
+                otherName[i].text = GameMeager.Instance.playroomKit.GetPlayer(sortName[i]).GetProfile().name;
             }
             else
             {
@@ -33,8 +35,8 @@ public class WinerUI : MonoBehaviour
         errorImage.gameObject.SetActive(true);
         StartCoroutine(GameMeager.Instance.WaitFor(1,() => { Application.Quit(); }));
     }
-    public void MainMenuBT()
-    {
-        SceneManager.LoadScene("MainDemo");
-    }
+    //public void MainMenuBT()
+    //{
+    //    SceneManager.LoadScene("MainDemo");
+    //}
 }

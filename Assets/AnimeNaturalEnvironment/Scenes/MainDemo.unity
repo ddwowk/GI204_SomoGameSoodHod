@@ -4854,7 +4854,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1120087167}
         m_TargetAssemblyTypeName: WinerUI, Assembly-CSharp
-        m_MethodName: MainMenuBT
+        m_MethodName: onBT
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
