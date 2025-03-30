@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Canvas canvas;
     [SerializeField] LayerMask checkRayPlayer;
     private Animator animator;
+    public bool isWalk = false;
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -28,12 +29,14 @@ public class PlayerController : MonoBehaviour
         if (move.IsInProgress())
         {
             gameObject.transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
+            isWalk = true;
         }
         else
         {
             gameObject.transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime);
+            isWalk = false;
         }
-        animator.SetBool("onPressWalk", move.IsInProgress());
+        animator.SetBool("onPressWalk", isWalk);
     }
     private void LateUpdate()
     {

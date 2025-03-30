@@ -12,6 +12,6 @@ public class MainMenuUI : MonoBehaviour
     private void Awake()
     {
         playBT.onClick.AddListener(() => { gameObject.SetActive(false); gameMeager.gameObject.SetActive(true); });
-        crediteBT.onClick.AddListener(() => { Application.OpenURL("https://youtu.be/E4WlUXrJgy4?si=F-2AUNxsOzqMSPqg"); });
+        crediteBT.onClick.AddListener(() => { Application.OpenURL("https://ddwowk.github.io/GI204Credits/GI204.html?fbclid=IwZXh0bgNhZW0CMTEAAR1NYWmsxmb1yDsurbsytsBrr3tz9axXZthghmkVlperPxNkzP-bdxftYuA_aem_ZT0TPiYcVtURXZN20fzOLw"); });
     }
 }

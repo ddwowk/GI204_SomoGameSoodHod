@@ -15,7 +15,7 @@ public class GameMeager : MonoBehaviour
     [SerializeField] private Transform[] spawnPosition;
     [SerializeField] private ParticleSystem hitEffect,deadEffect;
     [SerializeField] private GameObject winningMenu,mainMenu;
-
+    [SerializeField] private AudioClip[] audioClip,deadAudio;
     private int currentSpawnPoint = 0;
     public static readonly Dictionary<string, GameObject> PlayerDick = new();
     private static readonly List<PlayroomKit.Player> players = new();
@@ -24,7 +24,6 @@ public class GameMeager : MonoBehaviour
 
     private List<string> losePlayer = new();
 
-    private GameMeager() { }
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -45,7 +44,8 @@ public class GameMeager : MonoBehaviour
         }, () =>
         {
             playroomKit.OnPlayerJoin(PlayerJoin);
-            playroomKit.WaitForState("Winner", (string _) => { winningMenu.SetActive(true); winningMenu.GetComponent<WinerUI>().updateData(losePlayer); });
+            playroomKit.WaitForState("Winner", (string _) => { winningMenu.SetActive(true); winningMenu.GetComponent<WinerUI>().updateData(losePlayer);SoundManeger.Instance.m_AudioSource.Stop();  SoundManeger.Instance.PlaySound(audioClip[1], true); });
+            SoundManeger.Instance.PlaySound(audioClip[0],true);
            
         });
         playroomKit.RpcRegister("PlayerHit", AddForceOnCollision);
@@ -63,7 +63,7 @@ public class GameMeager : MonoBehaviour
 
             players[index].SetState("Pos", playerGameObjects[index].transform.position);
             players[index].SetState("Rotate", playerGameObjects[index].transform.rotation);
-            players[index].SetState("Animetion", playerGameObjects[index].transform.GetChild(0).gameObject.GetComponent<Animator>().GetCurrentAnimatorClipInfo(0)[0].clip.name);
+            players[index].SetState("Walk", playerGameObjects[index].GetComponent<PlayerController>().isWalk);
 
             for (int i = 0; i < players.Count; i++)
             {
@@ -71,10 +71,10 @@ public class GameMeager : MonoBehaviour
                 {
                     var pos = players[i].GetState<Vector3>("Pos");
                     var rot = players[i].GetState<Quaternion>("Rotate");
-                    var walkAnim = players[i].GetState<string>("Animetion");
+                    bool walk = players[i].GetState<bool>("Walk");
                     if (playerGameObjects != null)
                     {
-                        playerGameObjects[index].transform.GetChild(0).gameObject.GetComponent<Animator>().Play(walkAnim);
+                        playerGameObjects[i].GetComponent<PlayerController>().isWalk = walk;
                         playerGameObjects[i].GetComponent<Transform>().position = pos;
                         playerGameObjects[i].GetComponent<Transform>().rotation = rot;
                     }
@@ -95,6 +95,7 @@ public class GameMeager : MonoBehaviour
         playerObj.transform.GetChild(0).gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material.color = player.GetProfile().color;
         playerObj.transform.GetChild(1).GetChild(0).gameObject.GetComponentInChildren<TextMeshProUGUI>().color = player.GetProfile().color; 
         player.SetState("Name", player.GetProfile().name);
+        player.SetState("Walk",false);
 
         PlayerDick.Add(player.id, playerObj);
         players.Add(player);
@@ -136,14 +137,17 @@ public class GameMeager : MonoBehaviour
         GameObject deadEffectObj = Instantiate(deadEffect, tagetObj.transform).gameObject;
         StartCoroutine(WaitFor(1, () => { RemovePlayer(tagetID); }));
         StartCoroutine(WaitFor(3, () => { Destroy(deadEffectObj); }));
+        SoundManeger.Instance.PlaySound(deadAudio[UnityEngine.Random.Range(0, deadAudio.Length)], false, tagetObj.GetComponent<AudioSource>());
         if (PlayerDick.Count <= 1)
         {
-            List<string> playerIDList = new(PlayerDick.Keys.ToList());
-            foreach (var item in playerIDList)
+            if (PlayerDick.Count > 0)
             {
-                Debug.Log(item);
+                playroomKit.SetState("Winner", playroomKit.GetPlayer(PlayerDick.Keys.ToArray()[0]).GetProfile().name);
             }
-            playroomKit.SetState("Winner", playroomKit.GetPlayer(playerIDList[0]).GetProfile().name);
+            else
+            {
+                playroomKit.SetState("Winner", "");
+            }
         }
     }
     public IEnumerator WaitFor(int secon,Action action)

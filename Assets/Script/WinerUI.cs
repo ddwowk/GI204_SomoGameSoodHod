@@ -33,4 +33,8 @@ public class WinerUI : MonoBehaviour
         errorImage.gameObject.SetActive(true);
         StartCoroutine(GameMeager.Instance.WaitFor(1,() => { Application.Quit(); }));
     }
+    public void MainMenuBT()
+    {
+        SceneManager.LoadScene("MainDemo");
+    }
 }
