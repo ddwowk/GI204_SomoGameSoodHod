@@ -45,12 +45,9 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        if (move.IsInProgress())
+        if (collision.gameObject.CompareTag("Player"))
         {
-            if (collision.gameObject.CompareTag("Player") && Physics.Raycast(transform.position, transform.forward, 500, checkRayPlayer))
-            {
-                GameMeager.Instance.playroomKit.RpcCall("PlayerHit", collision.gameObject.name);
-            }
+            GameMeager.Instance.playroomKit.RpcCall("PlayerHit", collision.gameObject.name, PlayroomKit.RpcMode.ALL);
         }
     }
 }
