@@ -6,7 +6,7 @@ public class Area : MonoBehaviour
     { 
         if (other.gameObject.CompareTag("Player"))
         {
-            GameMeager.Instance.playroomKit.RpcCall("PlayerOutArea",other.gameObject.name,Playroom.PlayroomKit.RpcMode.ALL);
+            GameMeager.Instance.playroomKit.RpcCall("PlayerOutArea",other.gameObject.name);
         }
     }
 }

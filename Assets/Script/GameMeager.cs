@@ -47,7 +47,6 @@ public class GameMeager : MonoBehaviour
             SoundManeger.Instance.PlaySound(audioClip[0],true);
            
         });
-        playroomKit.WaitForState("Winner", (string _) => { winningMenu.SetActive(true); winningMenu.GetComponent<WinerUI>().updateData(losePlayer); SoundManeger.Instance.m_AudioSource.Stop(); SoundManeger.Instance.PlaySound(audioClip[1], true); });
         playroomKit.RpcRegister("PlayerHit", AddForceOnCollision);
         playroomKit.RpcRegister("PlayerOutArea", OnOutOfArea);
     }
@@ -56,12 +55,21 @@ public class GameMeager : MonoBehaviour
     {
         if (isPlayerJoin)
         {
+            if (playerGameObjects.Count <= 1)
+            {
+                if (PlayerDick.Keys.Count > 0)
+                {
+
+                    playroomKit.SetState("Winner", playroomKit.GetPlayer(PlayerDick.Keys.ToArray()[0]).GetProfile().name);
+                }
+            }
             var myplayer = playroomKit.MyPlayer();
             var index = players.IndexOf(myplayer);
             if (playerGameObjects[index].GetComponent<PlayerController>() != null)
             {
                 playerGameObjects[index].GetComponent<PlayerController>().Move();
             }
+            playroomKit.WaitForState("Winner", (string _) => { winningMenu.SetActive(true); winningMenu.GetComponent<WinerUI>().updateData(losePlayer); SoundManeger.Instance.m_AudioSource.Stop(); SoundManeger.Instance.PlaySound(audioClip[1], true); });
             players[index].SetState("Pos", playerGameObjects[index].transform.position);
             players[index].SetState("Rotate", playerGameObjects[index].transform.rotation);
             players[index].SetState("Walk", playerGameObjects[index].GetComponent<PlayerController>().isWalk);
@@ -140,19 +148,6 @@ public class GameMeager : MonoBehaviour
         StartCoroutine(WaitFor(3, () => { Destroy(deadEffectObj); }));
         SoundManeger.Instance.PlaySound(deadAudio[UnityEngine.Random.Range(0, deadAudio.Length)], false, tagetObj.GetComponent<AudioSource>());
         Debug.Log(playerGameObjects.Count);
-        if (playerGameObjects.Count <= 1)
-        {
-            if (PlayerDick.Keys.Count > 0)
-            {
-
-                playroomKit.SetState("Winner", playroomKit.GetPlayer(PlayerDick.Keys.ToArray()[0]).GetProfile().name);
-            }
-            else
-            {
-                playroomKit.SetState("Winner", "");
-            }
-        }
-
     }
     public IEnumerator WaitFor(int secon,Action action)
     {
